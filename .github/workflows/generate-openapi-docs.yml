@@ -34,13 +34,16 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Install Swashbuckle CLI
-        run: dotnet tool install --global Swashbuckle.AspNetCore.Cli --version 10.1.4
+        run: |
+          dotnet tool install --global Swashbuckle.AspNetCore.Cli --version 10.1.4
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
       - name: Create docs directory
         run: mkdir -p docs
 
       - name: Generate OpenAPI spec
         run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
           dotnet swagger tofile --output ../docs/openapi.yaml --yaml bin/Release/net10.0/Users.dll v1
         working-directory: ./Users
 
