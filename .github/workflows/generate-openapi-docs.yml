@@ -55,7 +55,12 @@ jobs:
       - name: Check for changes
         id: git-check
         run: |
-          git diff --quiet docs/openapi.yaml || echo "changed=true" >> $GITHUB_OUTPUT
+          git add docs/openapi.yaml
+          if git diff --cached --quiet docs/openapi.yaml; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Commit OpenAPI documentation
         if: steps.git-check.outputs.changed == 'true'
