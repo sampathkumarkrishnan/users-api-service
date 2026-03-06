@@ -92,5 +92,22 @@ namespace Users.Controllers
             // Logic to delete a user
             return NoContent();
         }
+
+        /// <summary>
+        /// Searches for users by name or email
+        /// </summary>
+        /// <param name="name">Optional name to search for</param>
+        /// <param name="email">Optional email to search for</param>
+        /// <returns>A list of users matching the search criteria</returns>
+        /// <response code="200">Returns the list of matching users</response>
+        /// <response code="400">If the search parameters are invalid</response>
+        [HttpGet("search")]
+        [ProducesResponseType(typeof(IEnumerable<UserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult SearchUsers([FromQuery] string? name, [FromQuery] string? email)
+        {
+            // Logic to search users by name or email
+            return Ok();
+        }
     }
 }
