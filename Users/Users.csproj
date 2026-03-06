@@ -10,7 +10,7 @@
 	<NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <None Include=".github\workflows\generate-openapi-docs.yml" />
+    <None Include="..\.github\workflows\generate-openapi-docs.yml" />
   </ItemGroup>
 
   <ItemGroup>
