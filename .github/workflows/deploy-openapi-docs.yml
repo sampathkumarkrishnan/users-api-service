@@ -1,0 +1,77 @@
+name: Deploy OpenAPI Documentation
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'docs/openapi.yaml'
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+        with:
+          path: source-repo
+
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: sampathkumarkrishnan/api-docs
+          token: ${{ secrets.API_DOCS_TOKEN }}
+          path: api-docs
+          ref: main
+
+      - name: Ensure openapi directory exists in target repo
+        working-directory: api-docs
+        run: |
+          if [ ! -d "openapi" ]; then
+            mkdir openapi
+            echo "? Created openapi directory"
+          else
+            echo "? openapi directory already exists"
+          fi
+
+      - name: Copy OpenAPI spec to target repository
+        run: |
+          if [ -f "api-docs/openapi/users.yaml" ]; then
+            echo "??  users.yaml exists, overwriting..."
+          fi
+          cp -f source-repo/docs/openapi.yaml api-docs/openapi/users.yaml
+          echo "? Copied openapi.yaml to api-docs/openapi/users.yaml"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies in target repository
+        working-directory: api-docs
+        run: npm install
+
+      - name: Run pre-build in target repository
+        working-directory: api-docs
+        run: npm run pre-build
+
+      - name: Run build in target repository
+        working-directory: api-docs
+        run: npm run build
+
+      - name: Commit and push changes to target repository
+        working-directory: api-docs
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "docs: update users API documentation from users-api-service"
+            git push origin main
+            echo "? Successfully deployed OpenAPI documentation to api-docs repository"
+          fi
