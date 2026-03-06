@@ -124,6 +124,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  /Users/search:
+    get:
+      tags:
+        - Users
+      summary: Searches for users by name or email
+      parameters:
+        - name: name
+          in: query
+          description: Optional name to search for
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: Optional email to search for
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns the list of matching users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDTO'
+        '400':
+          description: If the search parameters are invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
 components:
   schemas:
     ProblemDetails:
